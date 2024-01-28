@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+}
+
+.analytics {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.heading {
+  color: #5076ff;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.tableHeading {
+  background-color: red;
+  display: flex;
+  gap: 1rem;
+}
+
+.table {
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.table .icon {
+  padding: 5px;
+}
+
+.table .icon:hover {
+  transition: all 0.3s ease;
+  scale: 1.25;
+}
+
+th,
+td {
+  padding: 5px 20px;
+}
+
+thead {
+  background: #5076ff;
+  font-weight: 600;
+  color: #fff;
+}
