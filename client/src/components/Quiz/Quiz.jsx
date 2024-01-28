@@ -18,8 +18,6 @@ function Quiz() {
   const { title } = useSelector((state) => state.modal);
   const [questionType, setQuestionType] = useState("text");
 
-  
-
   const getInitialOptionState = useCallback(() => {
     if (questionType === "text") {
       return [{ text: "" }, { text: "" }];
@@ -198,8 +196,6 @@ function Quiz() {
               },
             }
           );
-
-          
 
           if (response.status === 201) {
             toast.success("quiz created!", {

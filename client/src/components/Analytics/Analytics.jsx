@@ -8,6 +8,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setQuizUpdating,setQuizUpdateId} from "../../features/modalSlice";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 
 function Analytics() {
@@ -18,30 +19,62 @@ function Analytics() {
     dispatch(setQuizUpdating());
     dispatch(setQuizUpdateId(id))
   }
+
+  const fetchData =async () => {
+    try {
+      const token = Cookies.get("token");
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/userdata`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setAnalytics(response.data.data.quizes);
+      console.log("quizes:", response.data.data.quizes);
+    } catch (e) {
+      console.error(e);
+    }
+  }
   useEffect(() => {
-    (async () => {
-      try {
-        const token = Cookies.get("token");
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/userdata`,
-          {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setAnalytics(response.data.data.quizes);
-        console.log("quizes:", response.data.data.quizes);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    fetchData();
   }, []);
   
   const getCreatedDate = (date) => {
     let timestamp = new Date(date);
-    return timestamp.getDate() + " " + timestamp.toLocaleString() + ", " + timestamp.getFullYear();
+
+    let day = timestamp.getDate();
+    let month = timestamp.toLocaleString("default", { month: "short" });
+    let year = timestamp.getFullYear();
+
+    let formattedDate =  day + " " + month + ", " + year;
+    return formattedDate
   };
+
+  const deleteQuizRecord = async(id) =>{
+    const token   = Cookies.get("token");
+    const response = await axios.delete(`${import.meta.env.VITE_APP_BACKEND_URL}/deletequiz/${id}`,{headers:{
+      authorization:`Bearer ${token}`
+    }})
+    if(response.status===200){
+      //toast message;
+      toast.success("quiz deleted!", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        closeButton: false,
+        transition: Bounce,
+      });
+      console.log(`record deleted!`);
+      fetchData();
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -76,7 +109,7 @@ function Analytics() {
                     <td className={styles.icon} onClick={()=>editSelected(quiz._id)}>
                       <TbEdit size="1.2rem" />
                     </td>
-                    <td className={styles.icon}>
+                    <td className={styles.icon} onClick={()=>deleteQuizRecord(quiz._id)}>
                       <MdDelete size="1.2rem" />
                     </td>
                     <td className={styles.icon}>
@@ -89,6 +122,7 @@ function Analytics() {
           </tbody>
         </table>
       </div>
+      <ToastContainer/>
     </div>
   );
 }

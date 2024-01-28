@@ -23,7 +23,7 @@ function Dashboard() {
     (async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get(
+        const response = await axios.delete(
           `${import.meta.env.VITE_APP_BACKEND_URL}/userdata`,
           {
             headers: {
@@ -32,7 +32,6 @@ function Dashboard() {
           }
         );
         setTrendingQuizes(response.data.data.quizes);
-        console.log("quizes:", response.data.data.quizes);
       } catch (e) {
         console.error(e);
       }

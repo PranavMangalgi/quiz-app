@@ -89,9 +89,20 @@ router.post("/postupdatedquizdata/:id", cookieAuth, async (req, res) => {
 });
 
 //delete a particular quiz
-router.delete("/deletequiz", cookieAuth, async (req, res) => {
+router.delete("/deletequiz/:id", cookieAuth, async (req, res) => {
   try {
-  } catch (e) {}
+    const { id } = req.params;
+    if (!id) {
+      res.status(400).json({ error: "no id present" });
+    }
+    console.log(id);
+
+    Quiz.findByIdAndDelete(id)
+      .then(() => res.status(200).json({ status: "deleted!" }))
+      .catch((e) => res.status(500).json({ error: e.message }));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 module.exports = router;
