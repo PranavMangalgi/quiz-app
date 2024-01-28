@@ -56,7 +56,22 @@ router.post("/login", async (req, res) => {
 });
 
 
-router.get("/prot", cookieAuth, (req, res) => {
-  res.send("this is a protected route");
-});
+//! modify below
+router.get('/userdata',cookieAuth,async(req,res)=>{
+  try{
+    const userId = req.user;
+    const userInfo = await User.findOne({_id:userId}).populate('quizes');
+    if(!userInfo){
+      return res.status(404).json({error:'user not found'});
+    }
+
+    res.status(200).json({data:userInfo});
+
+  }catch(e){
+    res.status(500).json({error:e.message});
+  }
+})
+
+
+
 module.exports = router;

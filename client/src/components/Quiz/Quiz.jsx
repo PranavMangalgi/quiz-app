@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import styles from "./quiz.module.css";
 import { IoAdd } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
@@ -6,13 +6,20 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setQuizModal } from "../../features/modalSlice";
+import {
+  setQuizModal,
+  setQuizUpdateId,
+  setQuizUpdating,
+} from "../../features/modalSlice";
 function Quiz() {
-
-  
+  const initialRender = useRef(true);
+  const { quizUpdating, quizUpdateId } = useSelector((state) => state.modal);
   const [questionsCount, setQuestionsCount] = useState(1);
   const { title } = useSelector((state) => state.modal);
   const [questionType, setQuestionType] = useState("text");
+
+  
+
   const getInitialOptionState = useCallback(() => {
     if (questionType === "text") {
       return [{ text: "" }, { text: "" }];
@@ -85,15 +92,54 @@ function Quiz() {
   };
 
   useEffect(() => {
-    console.log(questions);
+    if (initialRender && quizUpdating && quizUpdateId) {
+      console.log(quizUpdateId);
+      (async () => {
+        try {
+          const token = Cookies.get("token");
+          const response = await axios.get(
+            `${
+              import.meta.env.VITE_APP_BACKEND_URL
+            }/getquizdata/${quizUpdateId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log(response.data.data);
+          initialRender.current = false;
+          setQuestions(response.data.data.questions);
+          setQuestionsCount(response.data.data.questions.length);
+          setQuestionType(response.data.data.questionType);
+          setTimer(response.data.data.timer);
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+    }
+  }, [initialRender, quizUpdating, quizUpdateId]);
+
+  useEffect(() => {
     setError(false);
     if (cross) {
-      // set because of async property of js
       setCurrentIndex((c) => c - 1);
       setCross(false);
     }
-    console.log("currentIndex", currentIndex);
-  }, [currentIndex, questions, cross]);
+  }, [cross]);
+
+  useEffect(() => {
+    setQuestions((prevQuestions) => {
+      return prevQuestions.map((question) => {
+        const newOptions = getInitialOptionState();
+        return {
+          ...question,
+          options: newOptions,
+          correctOption: undefined,
+        };
+      });
+    });
+  }, [questionType, getInitialOptionState]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,38 +181,77 @@ function Quiz() {
       return;
     } else {
       setError(false);
+      const token = Cookies.get("token");
       try {
-        const token = Cookies.get("token");
-        const response = await axios.post(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/createquiz`,
-          {
-            title,
-            questions,
-            questionType,
-            timer,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
+        if (!quizUpdateId && !quizUpdating) {
+          const response = await axios.post(
+            `${import.meta.env.VITE_APP_BACKEND_URL}/createquiz`,
+            {
+              title,
+              questions,
+              questionType,
+              timer,
             },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          
+
+          if (response.status === 201) {
+            toast.success("quiz created!", {
+              position: "top-right",
+              autoClose: 4000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              closeButton: false,
+              transition: Bounce,
+            });
+
+            setTimeout(() => {
+              dispatch(setQuizModal());
+            }, 1300);
           }
-        );
+        } else {
+          console.log({ timer, questionType, questions });
 
-        console.log(response);
-
-        if (response.status === 201) {
-          toast.success("quiz created!", {
-            position: "top-right",
-            autoClose: 4000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            closeButton: false,
-            transition: Bounce,
-          });
+          const response = await axios.post(
+            `${
+              import.meta.env.VITE_APP_BACKEND_URL
+            }/postupdatedquizdata/${quizUpdateId}`,
+            { timer, questionType, questions },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log(response);
+          if (response.status === 200) {
+            toast.success("quiz updated!", {
+              position: "top-right",
+              autoClose: 4000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              closeButton: false,
+              transition: Bounce,
+            });
+            setTimeout(() => {
+              dispatch(setQuizUpdateId(null));
+              dispatch(setQuizUpdating());
+            }, 1300);
+          }
         }
       } catch (e) {
         console.error(e);
@@ -285,33 +370,42 @@ function Quiz() {
                               question.correctOption === optionIdx &&
                               styles.correct
                             } ${
-                              error && option.text.trim() === "" && styles.error
-                            }`}
+                              error &&
+                              option.text &&
+                              option.text.trim() === "" &&
+                              questionType.includes("text") &&
+                              styles.error
+                            } ${error && !option.text && styles.error}`}
                             onChange={(e) => {
                               const updatedQuestions = [...questions];
                               updatedQuestions[idx].options[optionIdx].text =
                                 e.target.value;
                               setQuestions(updatedQuestions);
                             }}
-                            value={option.text}
+                            value={option.text || ""}
                           />
                         )}
                         {questionType.includes("image") && (
                           <input
                             type="text"
                             placeholder="image"
-                            className={
-                              question.correctOption === optionIdx
-                                ? styles.correct
-                                : ""
-                            }
+                            className={`${
+                              question.correctOption === optionIdx &&
+                              styles.correct
+                            } ${
+                              error &&
+                              option.image &&
+                              option.image.trim() === "" &&
+                              questionType.includes("image") &&
+                              styles.error
+                            } ${error && !option.image && styles.error}`}
                             onChange={(e) => {
                               const updatedQuestions = [...questions];
                               updatedQuestions[idx].options[optionIdx].image =
                                 e.target.value;
                               setQuestions(updatedQuestions);
                             }}
-                            value={option.image}
+                            value={option.image || ""}
                           />
                         )}
 
@@ -371,8 +465,12 @@ function Quiz() {
         )}
 
         <div className={styles.buttons}>
-          <button onClick={()=>dispatch(setQuizModal())}>Cancel</button>
-          <button type="submit">Create Quiz</button>
+          <button onClick={() => dispatch(setQuizModal())}>Cancel</button>
+          {quizUpdating ? (
+            <button>Update Quiz</button>
+          ) : (
+            <button type="submit">Create Quiz</button>
+          )}
         </div>
         <ToastContainer />
       </form>

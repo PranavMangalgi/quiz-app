@@ -1,8 +1,43 @@
 import styles from "./dashboard.module.css";
 import SideBar from "../Sidebar/Sidebar";
+import { useEffect, useState } from "react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
+import Cookies from "js-cookie";
+import axios from "axios";
 function Dashboard() {
-  const x = [1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13];
+  
+  const [trendingQuizes, setTrendingQuizes] = useState([]);
+
+  const getCreatedDate = (date) => {
+    let timestamp = new Date(date);
+
+    let day = timestamp.getDate();
+    let month = timestamp.toLocaleString("default", { month: "short" });
+    let year = timestamp.getFullYear();
+
+    let formattedDate = "Created on : " + day + " " + month + ", " + year;
+    return formattedDate
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = Cookies.get("token");
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_BACKEND_URL}/userdata`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setTrendingQuizes(response.data.data.quizes);
+        console.log("quizes:", response.data.data.quizes);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
   return (
     <div className={styles.container}>
       <SideBar />
@@ -24,25 +59,28 @@ function Dashboard() {
         <div className={styles.quizs}>
           <h2>Trending quizs</h2>
           <div className={styles.allQuizs}>
-            {x.map((card) => (
-              <>
-                <div className={styles.quizCard} key={card}>
-                  <div className={styles.quizCardContent}>
-                    <div>Quiz1</div>
-                    <div className={styles.orangeCol}>
-                      667{" "}
-                      <MdOutlineRemoveRedEye style={{ alignSelf: "center" }} />
+            {trendingQuizes.length > 0 &&
+              trendingQuizes.map((quiz) => (
+                <>
+                  <div className={styles.quizCard} key={quiz}>
+                    <div className={styles.quizCardContent}>
+                      <div>{quiz.title}</div>
+                      <div className={styles.orangeCol}>
+                        667{" "}
+                        <MdOutlineRemoveRedEye
+                          style={{ alignSelf: "center" }}
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className={styles.greenCol}
+                      style={{ fontSize: ".8rem" }}
+                    >
+                     {getCreatedDate(quiz.createdAt)}
                     </div>
                   </div>
-                  <div
-                    className={styles.greenCol}
-                    style={{ fontSize: ".8rem" }}
-                  >
-                    Created on : 04 Sep, 2023
-                  </div>
-                </div>
-              </>
-            ))}
+                </>
+              ))}
           </div>
         </div>
       </div>

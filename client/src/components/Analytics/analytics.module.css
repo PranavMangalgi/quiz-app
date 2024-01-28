@@ -47,3 +47,7 @@ thead {
   font-weight: 600;
   color: #fff;
 }
+
+.odd {
+  background-color: #b3c4ff;
+}
