@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
 router.get('/userdata',cookieAuth,async(req,res)=>{
   try{
     const userId = req.user;
-    const userInfo = await User.findOne({_id:userId}).populate('quizes');
+    const userInfo = await User.findOne({_id:userId}).populate('quizes').populate('polls');
     if(!userInfo){
       return res.status(404).json({error:'user not found'});
     }

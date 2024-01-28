@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const quizSchema = new mongoose.Schema(
   {
+    questionType:{
+      type: String,
+      default:"Quiz"
+    },
     title: {
       type: String,
       required: true,
@@ -10,7 +14,7 @@ const quizSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    questionType: {
+    optionType: {
       type: String,
       required: true,
     },

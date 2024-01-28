@@ -23,7 +23,7 @@ function Dashboard() {
     (async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.delete(
+        const response = await axios.get(
           `${import.meta.env.VITE_APP_BACKEND_URL}/userdata`,
           {
             headers: {
@@ -31,6 +31,7 @@ function Dashboard() {
             },
           }
         );
+        console.log(response.data);
         setTrendingQuizes(response.data.data.quizes);
       } catch (e) {
         console.error(e);
@@ -56,9 +57,9 @@ function Dashboard() {
           </div>
         </div>
         <div className={styles.quizs}>
-          <h2>Trending quizs</h2>
+          <h2>Trending quizes</h2>
           <div className={styles.allQuizs}>
-            {trendingQuizes.length > 0 &&
+            {trendingQuizes.length > 0 ?
               trendingQuizes.map((quiz) => (
                 <>
                   <div className={styles.quizCard} key={quiz}>
@@ -79,7 +80,7 @@ function Dashboard() {
                     </div>
                   </div>
                 </>
-              ))}
+              )):<div>No trending quizes</div>}
           </div>
         </div>
       </div>

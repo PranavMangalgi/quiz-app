@@ -66,18 +66,18 @@
   gap: 2rem;
 }
 
-.questionType {
+.optionType {
   display: flex;
   gap: 3rem;
   align-items: center;
   padding: 0 2rem;
 }
 
-.questionTypeRadios {
+.optionTypeRadios {
   display: flex;
   gap: 1.5rem;
 }
-.questionTypeRadios label {
+.optionTypeRadios label {
   margin-left: 10px;
 }
 

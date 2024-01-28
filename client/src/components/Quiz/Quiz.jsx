@@ -16,20 +16,20 @@ function Quiz() {
   const { quizUpdating, quizUpdateId } = useSelector((state) => state.modal);
   const [questionsCount, setQuestionsCount] = useState(1);
   const { title } = useSelector((state) => state.modal);
-  const [questionType, setQuestionType] = useState("text");
+  const [optionType, setOptionType] = useState("text");
 
   const getInitialOptionState = useCallback(() => {
-    if (questionType === "text") {
+    if (optionType === "text") {
       return [{ text: "" }, { text: "" }];
-    } else if (questionType === "image") {
+    } else if (optionType === "image") {
       return [{ image: "" }, { image: "" }];
-    } else if (questionType === "image&text") {
+    } else if (optionType === "image&text") {
       return [
         { text: "", image: "" },
         { text: "", image: "" },
       ];
     }
-  }, [questionType]);
+  }, [optionType]);
 
   const [questions, setQuestions] = useState(
     Array.from({ length: questionsCount }, () => ({
@@ -68,11 +68,11 @@ function Quiz() {
   const handleAddOption = (qIdx) => {
     const updatedQuestions = [...questions];
     const newOption = {};
-    if (questionType === "text") {
+    if (optionType === "text") {
       newOption.text = "";
-    } else if (questionType === "image") {
+    } else if (optionType === "image") {
       newOption.image = "";
-    } else if (questionType === "image&text") {
+    } else if (optionType === "image&text") {
       newOption.text = "";
       newOption.image = "";
     }
@@ -109,7 +109,7 @@ function Quiz() {
           initialRender.current = false;
           setQuestions(response.data.data.questions);
           setQuestionsCount(response.data.data.questions.length);
-          setQuestionType(response.data.data.questionType);
+          setOptionType(response.data.data.optionType);
           setTimer(response.data.data.timer);
         } catch (e) {
           console.error(e);
@@ -137,12 +137,12 @@ function Quiz() {
         };
       });
     });
-  }, [questionType, getInitialOptionState]);
+  }, [optionType, getInitialOptionState]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!timer || !questionType) {
+    if (!timer || !optionType) {
       setError(true);
       return;
     }
@@ -155,9 +155,9 @@ function Quiz() {
         q.options.length < 2 ||
         q.options.some((option) => {
           return (
-            (questionType === "text" && option.text.trim() === "") ||
-            (questionType === "image" && option.image.trim() === "") ||
-            (questionType === "image&text" &&
+            (optionType === "text" && option.text.trim() === "") ||
+            (optionType === "image" && option.image.trim() === "") ||
+            (optionType === "image&text" &&
               (option.text.trim() === "" || option.image.trim() === ""))
           );
         })
@@ -187,7 +187,7 @@ function Quiz() {
             {
               title,
               questions,
-              questionType,
+              optionType,
               timer,
             },
             {
@@ -216,13 +216,13 @@ function Quiz() {
             }, 1300);
           }
         } else {
-          console.log({ timer, questionType, questions });
+          console.log({ timer, optionType, questions });
 
           const response = await axios.post(
             `${
               import.meta.env.VITE_APP_BACKEND_URL
             }/postupdatedquizdata/${quizUpdateId}`,
-            { timer, questionType, questions },
+            { timer, optionType, questions },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -309,36 +309,36 @@ function Quiz() {
                     setQuestions(updatedQuestions);
                   }}
                 />
-                <div className={styles.questionType}>
+                <div className={styles.optionType}>
                   <div>Option Type:</div>
-                  <div className={styles.questionTypeRadios}>
+                  <div className={styles.optionTypeRadios}>
                     <div>
                       <input
                         type="radio"
-                        name="questionType"
+                        name="optionType"
                         id="text"
-                        checked={questionType === "text"}
-                        onClick={() => setQuestionType("text")}
+                        checked={optionType === "text"}
+                        onClick={() => setOptionType("text")}
                       />
                       <label htmlFor="text">Text</label>
                     </div>
                     <div>
                       <input
                         type="radio"
-                        name="questionType"
+                        name="optionType"
                         id="image"
-                        checked={questionType === "image"}
-                        onClick={() => setQuestionType("image")}
+                        checked={optionType === "image"}
+                        onClick={() => setOptionType("image")}
                       />
                       <label htmlFor="image">Image</label>
                     </div>
                     <div>
                       <input
                         type="radio"
-                        name="questionType"
+                        name="optionType"
                         id="imageAndText"
-                        checked={questionType === "image&text"}
-                        onClick={() => setQuestionType("image&text")}
+                        checked={optionType === "image&text"}
+                        onClick={() => setOptionType("image&text")}
                       />
                       <label htmlFor="imageAndText">Image & Text</label>
                     </div>
@@ -358,7 +358,7 @@ function Quiz() {
                             setQuestions(updatedQuestions);
                           }}
                         />
-                        {questionType.includes("text") && (
+                        {optionType.includes("text") && (
                           <input
                             type="text"
                             placeholder="text"
@@ -369,7 +369,7 @@ function Quiz() {
                               error &&
                               option.text &&
                               option.text.trim() === "" &&
-                              questionType.includes("text") &&
+                              optionType.includes("text") &&
                               styles.error
                             } ${error && !option.text && styles.error}`}
                             onChange={(e) => {
@@ -381,7 +381,7 @@ function Quiz() {
                             value={option.text || ""}
                           />
                         )}
-                        {questionType.includes("image") && (
+                        {optionType.includes("image") && (
                           <input
                             type="text"
                             placeholder="image"
@@ -392,7 +392,7 @@ function Quiz() {
                               error &&
                               option.image &&
                               option.image.trim() === "" &&
-                              questionType.includes("image") &&
+                              optionType.includes("image") &&
                               styles.error
                             } ${error && !option.image && styles.error}`}
                             onChange={(e) => {

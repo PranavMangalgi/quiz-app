@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
   quizes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Quiz',
+  }],
+  polls: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Poll',
   }]
 });
 

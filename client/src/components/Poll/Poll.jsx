@@ -8,39 +8,39 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setPollModal,
-  setQuizUpdateId,
-  setQuizUpdating,
+  setPollUpdateId,
+  setPollUpdating,
 } from "../../features/modalSlice";
 function Poll() {
   const initialRender = useRef(true);
-  const { quizUpdating, quizUpdateId } = useSelector((state) => state.modal);
+  const { pollUpdating, pollUpdateId } = useSelector((state) => state.modal);
   const [questionsCount, setQuestionsCount] = useState(1);
   const { title } = useSelector((state) => state.modal);
-  const [questionType, setQuestionType] = useState("text");
+  const [optionType, setOptionType] = useState("text");
 
   const getInitialOptionState = useCallback(() => {
-    if (questionType === "text") {
+    if (optionType === "text") {
       return [{ text: "" }, { text: "" }];
-    } else if (questionType === "image") {
+    } else if (optionType === "image") {
       return [{ image: "" }, { image: "" }];
-    } else if (questionType === "image&text") {
+    } else if (optionType === "image&text") {
       return [
         { text: "", image: "" },
         { text: "", image: "" },
       ];
     }
-  }, [questionType]);
+  }, [optionType]);
 
   const [questions, setQuestions] = useState(
     Array.from({ length: questionsCount }, () => ({
       questionContent: "",
-      options: getInitialOptionState()
+      options: getInitialOptionState(),
     }))
   );
 
   const [cross, setCross] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
 
@@ -52,7 +52,6 @@ function Poll() {
       {
         questionContent: "",
         options: getInitialOptionState(),
-        
       },
     ]);
   };
@@ -66,11 +65,11 @@ function Poll() {
   const handleAddOption = (qIdx) => {
     const updatedQuestions = [...questions];
     const newOption = {};
-    if (questionType === "text") {
+    if (optionType === "text") {
       newOption.text = "";
-    } else if (questionType === "image") {
+    } else if (optionType === "image") {
       newOption.image = "";
-    } else if (questionType === "image&text") {
+    } else if (optionType === "image&text") {
       newOption.text = "";
       newOption.image = "";
     }
@@ -87,15 +86,15 @@ function Poll() {
   };
 
   useEffect(() => {
-    if (initialRender && quizUpdating && quizUpdateId) {
-      console.log(quizUpdateId);
+    if (initialRender && pollUpdating && pollUpdateId) {
+      console.log(pollUpdateId);
       (async () => {
         try {
           const token = Cookies.get("token");
           const response = await axios.get(
             `${
               import.meta.env.VITE_APP_BACKEND_URL
-            }/getquizdata/${quizUpdateId}`,
+            }/getpolldata/${pollUpdateId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -106,14 +105,13 @@ function Poll() {
           initialRender.current = false;
           setQuestions(response.data.data.questions);
           setQuestionsCount(response.data.data.questions.length);
-          setQuestionType(response.data.data.questionType);
-          
+          setOptionType(response.data.data.optionType);
         } catch (e) {
           console.error(e);
         }
       })();
     }
-  }, [initialRender, quizUpdating, quizUpdateId]);
+  }, [initialRender, pollUpdating, pollUpdateId]);
 
   useEffect(() => {
     setError(false);
@@ -130,16 +128,15 @@ function Poll() {
         return {
           ...question,
           options: newOptions,
-          
         };
       });
     });
-  }, [questionType, getInitialOptionState]);
+  }, [optionType, getInitialOptionState]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if ( !questionType) {
+    if (!optionType) {
       setError(true);
       return;
     }
@@ -151,9 +148,9 @@ function Poll() {
         q.options.length < 2 ||
         q.options.some((option) => {
           return (
-            (questionType === "text" && option.text.trim() === "") ||
-            (questionType === "image" && option.image.trim() === "") ||
-            (questionType === "image&text" &&
+            (optionType === "text" && option.text.trim() === "") ||
+            (optionType === "image" && option.image.trim() === "") ||
+            (optionType === "image&text" &&
               (option.text.trim() === "" || option.image.trim() === ""))
           );
         })
@@ -176,17 +173,15 @@ function Poll() {
     } else {
       setError(false);
       const token = Cookies.get("token");
-      console.log({title,
-        questions,
-        questionType});
+      console.log({ title, questions, optionType });
       try {
-        if (!quizUpdateId && !quizUpdating) {
+        if (!pollUpdateId && !pollUpdating) {
           const response = await axios.post(
-            `${import.meta.env.VITE_APP_BACKEND_URL}/createquiz`,
+            `${import.meta.env.VITE_APP_BACKEND_URL}/createpoll`,
             {
               title,
               questions,
-              questionType
+              optionType,
             },
             {
               headers: {
@@ -194,9 +189,10 @@ function Poll() {
               },
             }
           );
-
-          if (response.status === 201) {
-            toast.success("quiz created!", {
+            console.log(response.status);
+          if (response.status === 200) {
+            console.log('poll created!!')
+            toast.success("poll created!", {
               position: "top-right",
               autoClose: 4000,
               hideProgressBar: true,
@@ -214,13 +210,13 @@ function Poll() {
             }, 1300);
           }
         } else {
-          console.log({  questionType, questions });
+          console.log({ optionType, questions });
 
           const response = await axios.post(
             `${
               import.meta.env.VITE_APP_BACKEND_URL
-            }/postupdatedquizdata/${quizUpdateId}`,
-            {  questionType, questions },
+            }/postupdatedpolldata/${pollUpdateId}`,
+            { optionType, questions },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -229,7 +225,7 @@ function Poll() {
           );
           console.log(response);
           if (response.status === 200) {
-            toast.success("quiz updated!", {
+            toast.success("poll updated!", {
               position: "top-right",
               autoClose: 4000,
               hideProgressBar: true,
@@ -242,8 +238,8 @@ function Poll() {
               transition: Bounce,
             });
             setTimeout(() => {
-              dispatch(setQuizUpdateId(null));
-              dispatch(setQuizUpdating());
+              dispatch(setPollUpdateId(null));
+              dispatch(setPollUpdating());
             }, 1300);
           }
         }
@@ -307,36 +303,36 @@ function Poll() {
                     setQuestions(updatedQuestions);
                   }}
                 />
-                <div className={styles.questionType}>
+                <div className={styles.optionType}>
                   <div>Option Type:</div>
-                  <div className={styles.questionTypeRadios}>
+                  <div className={styles.optionTypeRadios}>
                     <div>
                       <input
                         type="radio"
-                        name="questionType"
+                        name="optionType"
                         id="text"
-                        checked={questionType === "text"}
-                        onClick={() => setQuestionType("text")}
+                        checked={optionType === "text"}
+                        onClick={() => setOptionType("text")}
                       />
                       <label htmlFor="text">Text</label>
                     </div>
                     <div>
                       <input
                         type="radio"
-                        name="questionType"
+                        name="optionType"
                         id="image"
-                        checked={questionType === "image"}
-                        onClick={() => setQuestionType("image")}
+                        checked={optionType === "image"}
+                        onClick={() => setOptionType("image")}
                       />
                       <label htmlFor="image">Image</label>
                     </div>
                     <div>
                       <input
                         type="radio"
-                        name="questionType"
+                        name="optionType"
                         id="imageAndText"
-                        checked={questionType === "image&text"}
-                        onClick={() => setQuestionType("image&text")}
+                        checked={optionType === "image&text"}
+                        onClick={() => setOptionType("image&text")}
                       />
                       <label htmlFor="imageAndText">Image & Text</label>
                     </div>
@@ -346,8 +342,7 @@ function Poll() {
                   <div className={styles.inputOptions}>
                     {question.options.map((option, optionIdx) => (
                       <div key={optionIdx}>
-                        
-                        {questionType.includes("text") && (
+                        {optionType.includes("text") && (
                           <input
                             type="text"
                             placeholder="text"
@@ -358,7 +353,7 @@ function Poll() {
                               error &&
                               option.text &&
                               option.text.trim() === "" &&
-                              questionType.includes("text") &&
+                              optionType.includes("text") &&
                               styles.error
                             } ${error && !option.text && styles.error}`}
                             onChange={(e) => {
@@ -370,7 +365,7 @@ function Poll() {
                             value={option.text || ""}
                           />
                         )}
-                        {questionType.includes("image") && (
+                        {optionType.includes("image") && (
                           <input
                             type="text"
                             placeholder="image"
@@ -381,7 +376,7 @@ function Poll() {
                               error &&
                               option.image &&
                               option.image.trim() === "" &&
-                              questionType.includes("image") &&
+                              optionType.includes("image") &&
                               styles.error
                             } ${error && !option.image && styles.error}`}
                             onChange={(e) => {
@@ -415,9 +410,7 @@ function Poll() {
                         Add Option
                       </div>
                     )}
-                    
                   </div>
-                  
                 </div>
               </div>
             )
@@ -425,7 +418,7 @@ function Poll() {
 
         <div className={styles.buttons}>
           <button onClick={() => dispatch(setPollModal())}>Cancel</button>
-          {quizUpdating ? (
+          {pollUpdating ? (
             <button>Update Poll</button>
           ) : (
             <button type="submit">Create Poll</button>
