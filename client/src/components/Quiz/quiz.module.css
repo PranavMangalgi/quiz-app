@@ -189,3 +189,9 @@ input.correct::placeholder {
 .errorText {
   color: red;
 }
+
+
+.cancelBtn{
+  background-color: #f6f1f1b4;
+  color: #9f9f9f;
+}

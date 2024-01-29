@@ -46,7 +46,8 @@ router.get("/getquizdata/:id", cookieAuth, async (req, res) => {
       res.status(400).json({ error: "no id present" });
     }
     const quiz = await Quiz.findOne({ _id: id });
-    return res.status(200).json({ data: quiz });
+    console.log(quiz);
+    return res.status(200).json({ data:quiz });
   } catch (e) {
     res.json({ error: e.message });
   }
@@ -105,4 +106,32 @@ router.delete("/deletequiz/:id", cookieAuth, async (req, res) => {
   }
 });
 
+// handle quiz result
+router.post('/quizresult/:id',cookieAuth,async(req,res)=>{
+  try {
+    const { id } = req.params;
+    if (!id) {
+      res.status(400).json({ error: "no id present" });
+    }
+    console.log(id);
+
+    const {answers} = req.body;
+    console.log(answers);
+    const quiz = await Quiz.findOne({_id:id});
+    const quizQuestions = [...quiz.questions];
+    let count = 0;
+    quizQuestions.forEach((q,idx)=>{
+      if(q.correctOption===answers[idx]){
+        count+=1;
+      }
+    })
+
+    res.json({count});
+
+
+    
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+})
 module.exports = router;

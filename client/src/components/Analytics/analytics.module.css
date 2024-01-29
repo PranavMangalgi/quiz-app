@@ -51,3 +51,7 @@ thead {
 .odd {
   background-color: #b3c4ff;
 }
+
+.questionWise{
+  text-decoration: underline;
+}

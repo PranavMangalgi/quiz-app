@@ -190,7 +190,7 @@ function Poll() {
             }
           );
             console.log(response.status);
-          if (response.status === 200) {
+          if (response.status === 201) {
             console.log('poll created!!')
             toast.success("poll created!", {
               position: "top-right",
@@ -417,7 +417,7 @@ function Poll() {
         )}
 
         <div className={styles.buttons}>
-          <button onClick={() => dispatch(setPollModal())}>Cancel</button>
+          <button onClick={() => dispatch(setPollModal())} className={styles.cancelBtn}>Cancel</button>
           {pollUpdating ? (
             <button>Update Poll</button>
           ) : (

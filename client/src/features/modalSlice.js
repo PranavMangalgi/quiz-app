@@ -4,7 +4,6 @@ const initialState = {
   quizTypeModal: false,
   quizModal: false,
   pollModal: false,
-  copyModal: false,
   title: "",
   quizUpdating: false,
   quizUpdateId: null,
@@ -26,9 +25,9 @@ const modalSlice = createSlice({
     setPollModal: (state) => {
       state.pollModal = !state.pollModal;
     },
-    setCopyModal: (state) => {
-      state.copyModal = !state.copyModal;
-    },
+    // setCopyModal: (state) => {
+    //   state.copyModal = !state.copyModal;
+    // },
     setTitle: (state, { payload }) => {
       state.title = payload;
     },
@@ -46,6 +45,9 @@ const modalSlice = createSlice({
     setPollUpdateId: (state, { payload }) => {
       state.pollUpdateId = payload;
     },
+    // setCopyLink:(state,{payload})=>{
+    //   state.copyLink = payload;
+    // }
   },
 });
 
@@ -59,6 +61,7 @@ export const {
   setQuizUpdateId,
   setPollUpdating,
   setPollUpdateId,
+  setCopyLink
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

@@ -11,6 +11,8 @@ import {
   setQuizUpdateId,
   setQuizUpdating,
 } from "../../features/modalSlice";
+
+
 function Quiz() {
   const initialRender = useRef(true);
   const { quizUpdating, quizUpdateId } = useSelector((state) => state.modal);
@@ -461,7 +463,7 @@ function Quiz() {
         )}
 
         <div className={styles.buttons}>
-          <button onClick={() => dispatch(setQuizModal())}>Cancel</button>
+          <button onClick={() => dispatch(setQuizModal())} className={styles.cancelBtn}>Cancel</button>
           {quizUpdating ? (
             <button>Update Quiz</button>
           ) : (

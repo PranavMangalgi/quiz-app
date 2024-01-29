@@ -72,6 +72,29 @@ router.get('/userdata',cookieAuth,async(req,res)=>{
   }
 })
 
+//analytics data
+router.get('/analytics',cookieAuth,async(req,res)=>{
+  try{
+    const userId = req.user;
+    if(!userId){
+      res.status(401).json({error:'user Id not present'});
+    }
+    const userInfo = await User.findOne({_id:userId}).populate('quizes').populate('polls');
+    if(!userInfo){
+      return res.status(404).json({error:'user not found'});
+    }
+
+    console.log(userInfo);
+
+    const tableData = [...userInfo.polls,...userInfo.quizes].sort((a,b)=>b.createdAt-a.createdAt)
+
+    res.status(200).json({tableData });
+
+  }catch(e){
+    res.status(500).json({error:e.message});
+  }
+})
+
 
 
 module.exports = router;

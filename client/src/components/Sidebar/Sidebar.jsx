@@ -5,8 +5,13 @@ import Poll from "../Poll/Poll";
 import CreateQuiz from "../CreateQuiz/CreateQuiz";
 import Quiz from "../Quiz/Quiz";
 import { useDispatch, useSelector } from "react-redux";
-import Cookies from 'js-cookie'
-import { setQuizModal, setQuizTypeModal,setPollModal } from "../../features/modalSlice";
+import Cookies from "js-cookie";
+import CopyLink from "../CopyLink/CopyLink";
+import {
+  setQuizModal,
+  setQuizTypeModal,
+  setPollModal,
+} from "../../features/modalSlice";
 Modal.setAppElement("#root");
 
 const modalStyle = {
@@ -30,8 +35,10 @@ const quizModalStyle = {
 function HomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
- 
-  const { quizTypeModal, quizModal,pollModal } = useSelector((state) => state.modal);
+
+  const { quizTypeModal, quizModal, pollModal } = useSelector(
+    (state) => state.modal
+  );
 
   return (
     <div className={styles.container}>
@@ -52,10 +59,14 @@ function HomePage() {
       </div>
       <div className={styles.logoutContainer}>
         <hr />
-        <div onClick={()=>{
-          Cookies.remove('token')
-          window.location.reload();
-          }}>Logout</div>
+        <div
+          onClick={() => {
+            Cookies.remove("token");
+            window.location.reload();
+          }}
+        >
+          Logout
+        </div>
       </div>
       <Modal
         isOpen={quizTypeModal}
@@ -67,12 +78,12 @@ function HomePage() {
 
       {/* quiz modal */}
       <Modal
- isOpen={quizModal}
- onRequestClose={() => dispatch(setQuizModal())}
- style={quizModalStyle}
->
- <Quiz />
-</Modal>
+        isOpen={quizModal}
+        onRequestClose={() => dispatch(setQuizModal())}
+        style={quizModalStyle}
+      >
+        <Quiz />
+      </Modal>
 
       {/* poll modal */}
       <Modal
@@ -82,6 +93,15 @@ function HomePage() {
       >
         <Poll />
       </Modal>
+
+      {/* copy link modal */}
+      {/* <Modal
+        isOpen={pollModal}
+        onRequestClose={() => dispatch(setPollModal())}
+        style={quizModalStyle}
+      >
+        <CopyLink />
+      </Modal> */}
     </div>
   );
 }

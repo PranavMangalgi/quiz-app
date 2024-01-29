@@ -27,7 +27,7 @@ router.post("/createpoll", cookieAuth, async (req, res) => {
     if (newPollId) {
       await User.findByIdAndUpdate(
         userId,
-        { $push: { polls: Poll } },
+        { $push: { polls: newPollId } },
         { new: true }
       );
       return res.status(201).json({ success });
@@ -45,6 +45,7 @@ router.get("/getpolldata/:id", cookieAuth, async (req, res) => {
     if (!id) {
       res.status(400).json({ error: "no id present" });
     }
+    console.log(id);
     const poll = await Poll.findOne({ _id: id });
     return res.status(200).json({ data: poll });
   } catch (e) {

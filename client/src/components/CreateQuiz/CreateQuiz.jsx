@@ -64,7 +64,7 @@ function CreateQuiz() {
         </div>
       </div>
       <div className={styles.buttons}>
-        <button onClick={()=>dispatch(setQuizTypeModal())}>Cancel</button>
+        <button onClick={()=>dispatch(setQuizTypeModal())} className={styles.cancelBtn}>Cancel</button>
         <button>Continue</button>
       </div>
       {error && (
