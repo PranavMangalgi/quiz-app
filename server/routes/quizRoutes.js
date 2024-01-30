@@ -39,7 +39,7 @@ router.post("/createquiz", cookieAuth, async (req, res) => {
 });
 
 //get a particular quiz data
-router.get("/getquizdata/:id", cookieAuth, async (req, res) => {
+router.get("/getquizdata/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -47,7 +47,7 @@ router.get("/getquizdata/:id", cookieAuth, async (req, res) => {
     }
     const quiz = await Quiz.findOne({ _id: id });
     console.log(quiz);
-    return res.status(200).json({ data:quiz });
+    return res.status(200).json({ data: quiz });
   } catch (e) {
     res.json({ error: e.message });
   }
@@ -107,31 +107,79 @@ router.delete("/deletequiz/:id", cookieAuth, async (req, res) => {
 });
 
 // handle quiz result
-router.post('/quizresult/:id',cookieAuth,async(req,res)=>{
+router.post("/quizresult/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
       res.status(400).json({ error: "no id present" });
     }
-    console.log(id);
 
-    const {answers} = req.body;
+    const { answers } = req.body;
     console.log(answers);
-    const quiz = await Quiz.findOne({_id:id});
+    const quiz = await Quiz.findOne({ _id: id });
     const quizQuestions = [...quiz.questions];
     let count = 0;
-    quizQuestions.forEach((q,idx)=>{
-      if(q.correctOption===answers[idx]){
-        count+=1;
+    quizQuestions.forEach((q, idx) => {
+      if (q.correctOption === answers[idx]) {
+        count += 1;
       }
-    })
+    });
 
-    res.json({count});
+    const copiedQuiz = { ...quiz.toObject() };
 
+    copiedQuiz.questions.forEach((q, idx) => {
+      if (answers[idx] !== undefined) {
+        console.log("count:", q.options[answers[idx]].count);
+        q.options[answers[idx]].count += 1;
+      }
+    });
 
-    
+    console.log("copiedQuiz", copiedQuiz);
+    await Quiz.findByIdAndUpdate(id, copiedQuiz);
+    res.status(200).json({ count });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-})
+});
+
+//quiz analysis
+router.get("/quizanalysis/:id", cookieAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "no id present" });
+    }
+
+    const quiz = await Quiz.findOne({ _id: id });
+    if (!quiz) {
+      return res.status(404).json({ error: "quiz not found" });
+    }
+
+    const copiedQuiz = { ...quiz.toObject() };
+
+    copiedQuiz.questions.forEach((q) => {
+      let totalCount = 0;
+      let correctCount = 0;
+      let wrongCount = 0;
+      q.options.forEach((opt, idx) => {
+        totalCount += opt.count;
+        if (idx === q.correctOption) {
+          correctCount += opt.count;
+        } else {
+          wrongCount += opt.count;
+        }
+      });
+      q.totalCount = totalCount;
+      q.correctCount = correctCount;
+      q.wrongCount = wrongCount;
+    });
+
+    console.log("copiedQuiz", copiedQuiz);
+
+    res.status(200).json({ questions: copiedQuiz.questions, title:copiedQuiz.title });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 module.exports = router;

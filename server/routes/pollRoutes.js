@@ -39,7 +39,7 @@ router.post("/createpoll", cookieAuth, async (req, res) => {
 });
 
 //get a particular poll data
-router.get("/getpolldata/:id", cookieAuth, async (req, res) => {
+router.get("/getpolldata/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -100,6 +100,34 @@ router.delete("/deletepoll/:id", cookieAuth, async (req, res) => {
     Poll.findByIdAndDelete(id)
       .then(() => res.status(200).json({ status: "deleted!" }))
       .catch((e) => res.status(500).json({ error: e.message }));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// handle poll result
+router.post("/pollresult/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      res.status(400).json({ error: "no id present" });
+    }
+
+    const { answers } = req.body;
+    console.log(answers);
+    const poll = await Poll.findOne({ _id: id });
+    const copiedPoll = { ...poll.toObject() };
+
+    copiedPoll.questions.forEach((q, idx) => {
+      if (answers[idx] !== undefined) {
+        console.log("count:", q.options[answers[idx]].count);
+        q.options[answers[idx]].count += 1;
+      }
+    });
+
+    console.log("copiedPoll", copiedPoll);
+    await Poll.findByIdAndUpdate(id, copiedPoll);
+    res.status(200).json({ count: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

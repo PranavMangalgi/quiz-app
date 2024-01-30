@@ -12,7 +12,6 @@ import {
   setQuizUpdating,
 } from "../../features/modalSlice";
 
-
 function Quiz() {
   const initialRender = useRef(true);
   const { quizUpdating, quizUpdateId } = useSelector((state) => state.modal);
@@ -22,13 +21,19 @@ function Quiz() {
 
   const getInitialOptionState = useCallback(() => {
     if (optionType === "text") {
-      return [{ text: "" }, { text: "" }];
+      return [
+        { text: "", count: 0 },
+        { text: "", count: 0 },
+      ];
     } else if (optionType === "image") {
-      return [{ image: "" }, { image: "" }];
+      return [
+        { image: "", count: 0 },
+        { image: "", count: 0 },
+      ];
     } else if (optionType === "image&text") {
       return [
-        { text: "", image: "" },
-        { text: "", image: "" },
+        { text: "", image: "", count: 0 },
+        { text: "", image: "", count: 0 },
       ];
     }
   }, [optionType]);
@@ -78,6 +83,7 @@ function Quiz() {
       newOption.text = "";
       newOption.image = "";
     }
+    newOption.count = 0;
     updatedQuestions[qIdx].options.push(newOption);
     setQuestions(updatedQuestions);
   };
@@ -96,17 +102,10 @@ function Quiz() {
       console.log(quizUpdateId);
       (async () => {
         try {
-          const token = Cookies.get("token");
           const response = await axios.get(
             `${
               import.meta.env.VITE_APP_BACKEND_URL
-            }/getquizdata/${quizUpdateId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+            }/getquizdata/${quizUpdateId}`);
           console.log(response.data.data);
           initialRender.current = false;
           setQuestions(response.data.data.questions);
@@ -463,7 +462,12 @@ function Quiz() {
         )}
 
         <div className={styles.buttons}>
-          <button onClick={() => dispatch(setQuizModal())} className={styles.cancelBtn}>Cancel</button>
+          <button
+            onClick={() => dispatch(setQuizModal())}
+            className={styles.cancelBtn}
+          >
+            Cancel
+          </button>
           {quizUpdating ? (
             <button>Update Quiz</button>
           ) : (

@@ -129,18 +129,19 @@ button {
     text-align: left;
   }
   .options {
+      
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem 100px;
+    align-content:space-between;
   }
   .option {
     width: 200px;
-    padding-right: 0;
-    padding-left: 0;
+    width: fit-content;
+    
   }
   .onlyImg img {
-    width: 200px;
+    width: 150px;
   }
   .result {
     padding: 2rem 1rem;
@@ -161,10 +162,17 @@ button {
     width: 300px;
   }
   .options {
-    gap: 1rem 100px;
+    gap: 1rem 300px;
   }
 }
 
 .selected {
   border: 1px solid black;
+}
+
+
+@media (min-width: 1300px){
+  .options {
+      gap: 1rem 500px;
+    }
 }

@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import styles from "./takequiz.module.css";
+import styles from "./takepoll.module.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import trophy from "../../assets/trophy.png";
 
 function TakeQuiz() {
   const { id } = useParams();
   const [result, setResult] = useState(null);
   const [optionType, setOptionType] = useState("");
-  const [timer, setTimer] = useState(1000);
+
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
@@ -16,35 +15,14 @@ function TakeQuiz() {
     Array.from({ length: questions.length })
   );
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (timer !== 1000) {
-        setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : prevTimer));
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timer]);
-
-  useEffect(() => {
-    if (
-      timer === 0 &&
-      timer !== 1000 &&
-      currentQuestionIndex < questions.length - 1
-    ) {
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      // Reset timer to 5 seconds when manually moving to the next question
-      setTimer(5);
-    }
-  }, [timer, currentQuestionIndex, questions]);
 
   const handleNextQuestion = useCallback(async () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setTimer(timer);
     } else {
       console.log(answers);
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/quizresult/${id}`,{answers}
+        `${import.meta.env.VITE_APP_BACKEND_URL}/pollresult/${id}`,{answers}
       );
 
       console.log(response);
@@ -52,24 +30,20 @@ function TakeQuiz() {
         setResult(response.data.count);
       }
     }
-  }, [answers, currentQuestionIndex, id, questions.length, timer]);
+  }, [answers, currentQuestionIndex, id, questions.length]);
 
-  useEffect(() => {
-    if (timer === 0 && currentQuestionIndex === questions.length - 1) {
-      handleNextQuestion();
-    }
-  }, [timer, currentQuestionIndex, questions, answers, id, handleNextQuestion]);
+  
 
   useEffect(() => {
     (async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/getquizdata/${id}`
+          `${import.meta.env.VITE_APP_BACKEND_URL}/getpolldata/${id}`
         );
-        const { optionType, questions, timer } = response.data.data;
+        const { optionType, questions} = response.data.data;
         setOptionType(optionType);
         setQuestions(questions);
-        setTimer(timer);
+  
       } catch (e) {
         console.error(e);
       }
@@ -77,7 +51,7 @@ function TakeQuiz() {
   }, [id]);
 
   const currentQuestion = questions[currentQuestionIndex];
-  const formattedTimer = `00:${timer < 10 ? "0" + timer : timer}`;
+
 
   useEffect(() => {
     console.log(answers);
@@ -91,9 +65,7 @@ function TakeQuiz() {
             <div className={styles.currentQuestion}>
               {currentQuestionIndex + 1}/{questions.length}
             </div>
-            {timer !== 1000 && (
-              <div className={styles.timer}>{formattedTimer}</div>
-            )}
+            
           </div>
           <div className={styles.question}>
             {currentQuestion && currentQuestion.questionContent}
@@ -137,16 +109,8 @@ function TakeQuiz() {
         </div>
       ) : (
         <div className={styles.result}>
-          <div className={styles.heading}>Congrats you completed the Quiz!</div>
-          <div>
-            <img src={trophy} alt="no-img" />
-          </div>
-          <div className={styles.scoreDiv}>
-            Your Score is{" "}
-            <span className={styles.greenSpan}>
-              {result}/{questions.length}
-            </span>
-          </div>
+          <div className={styles.heading}>Thank you for participating in the Poll!</div>
+          
         </div>
       )}
     </div>

@@ -20,13 +20,19 @@ function Poll() {
 
   const getInitialOptionState = useCallback(() => {
     if (optionType === "text") {
-      return [{ text: "" }, { text: "" }];
+      return [
+        { text: "", count: 0 },
+        { text: "", count: 0 },
+      ];
     } else if (optionType === "image") {
-      return [{ image: "" }, { image: "" }];
+      return [
+        { image: "", count: 0 },
+        { image: "", count: 0 },
+      ];
     } else if (optionType === "image&text") {
       return [
-        { text: "", image: "" },
-        { text: "", image: "" },
+        { text: "", image: "", count: 0 },
+        { text: "", image: "", count: 0 },
       ];
     }
   }, [optionType]);
@@ -73,6 +79,7 @@ function Poll() {
       newOption.text = "";
       newOption.image = "";
     }
+    newOption.count = 0;
     updatedQuestions[qIdx].options.push(newOption);
     setQuestions(updatedQuestions);
   };
@@ -90,17 +97,10 @@ function Poll() {
       console.log(pollUpdateId);
       (async () => {
         try {
-          const token = Cookies.get("token");
           const response = await axios.get(
             `${
               import.meta.env.VITE_APP_BACKEND_URL
-            }/getpolldata/${pollUpdateId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+            }/getpolldata/${pollUpdateId}`);
           console.log(response.data.data);
           initialRender.current = false;
           setQuestions(response.data.data.questions);
@@ -189,9 +189,9 @@ function Poll() {
               },
             }
           );
-            console.log(response.status);
+          console.log(response.status);
           if (response.status === 201) {
-            console.log('poll created!!')
+            console.log("poll created!!");
             toast.success("poll created!", {
               position: "top-right",
               autoClose: 4000,
@@ -417,7 +417,12 @@ function Poll() {
         )}
 
         <div className={styles.buttons}>
-          <button onClick={() => dispatch(setPollModal())} className={styles.cancelBtn}>Cancel</button>
+          <button
+            onClick={() => dispatch(setPollModal())}
+            className={styles.cancelBtn}
+          >
+            Cancel
+          </button>
           {pollUpdating ? (
             <button>Update Poll</button>
           ) : (

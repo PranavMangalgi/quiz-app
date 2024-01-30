@@ -6,6 +6,7 @@ import { MdDelete } from "react-icons/md";
 import { IoMdShare } from "react-icons/io";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
   setQuizUpdating,
@@ -166,7 +167,17 @@ function Analytics() {
                     <td className={styles.icon}>
                       <IoMdShare size="1.2rem" />
                     </td>
-                    <td className={styles.questionWise}>Question wise Analysis</td>
+                    <td className={styles.questionWise}>
+                      <Link
+                        to={
+                          record.questionType == "Quiz"
+                            ? `/quiz/analysis/${record._id}`
+                            : `/poll/analysis/${record._id}`
+                        }
+                      >
+                        Question wise Analysis
+                      </Link>
+                    </td>
                   </tr>
                 </>
               ))}
