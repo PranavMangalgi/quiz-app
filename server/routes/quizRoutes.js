@@ -45,6 +45,10 @@ router.get("/getquizdata/:id", async (req, res) => {
     if (!id) {
       res.status(400).json({ error: "no id present" });
     }
+
+    if(req.query.taking){
+      await Quiz.findByIdAndUpdate(id, {$push:{visitiedHistory:Date.now()}},{new:true});
+    }
     const quiz = await Quiz.findOne({ _id: id });
     console.log(quiz);
     return res.status(200).json({ data: quiz });
@@ -181,5 +185,19 @@ router.get("/quizanalysis/:id", cookieAuth, async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// router.post('/addquizimpression/:id',async(req,res)=>{
+//   try {
+//     const { id } = req.params;
+//     if (!id) {
+//       res.status(400).json({ error: "no id present" });
+//     }    
+    
+//     await Quiz.findByIdAndUpdate(id, {$push:{visitiedHistory:Date.now()}},{new:true});
+//     res.status(200).json({ count: true });
+//   } catch (e) {
+//     res.status(500).json({ error: e.message });
+//   }
+// })
 
 module.exports = router;

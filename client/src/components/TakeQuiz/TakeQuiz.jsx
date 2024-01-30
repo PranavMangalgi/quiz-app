@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./takequiz.module.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,7 @@ import trophy from "../../assets/trophy.png";
 
 function TakeQuiz() {
   const { id } = useParams();
+  const initialRender = useRef(true);
   const [result, setResult] = useState(null);
   const [optionType, setOptionType] = useState("");
   const [timer, setTimer] = useState(1000);
@@ -44,7 +45,8 @@ function TakeQuiz() {
     } else {
       console.log(answers);
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/quizresult/${id}`,{answers}
+        `${import.meta.env.VITE_APP_BACKEND_URL}/quizresult/${id}`,
+        { answers }
       );
 
       console.log(response);
@@ -61,19 +63,24 @@ function TakeQuiz() {
   }, [timer, currentQuestionIndex, questions, answers, id, handleNextQuestion]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/getquizdata/${id}`
-        );
-        const { optionType, questions, timer } = response.data.data;
-        setOptionType(optionType);
-        setQuestions(questions);
-        setTimer(timer);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    if (initialRender.current) {
+      (async () => {
+        try {
+          const response = await axios.get(
+            `${
+              import.meta.env.VITE_APP_BACKEND_URL
+            }/getquizdata/${id}?taking=true`
+          );
+          const { optionType, questions, timer } = response.data.data;
+          setOptionType(optionType);
+          setQuestions(questions);
+          setTimer(timer);
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+      initialRender.current = false;
+    }
   }, [id]);
 
   const currentQuestion = questions[currentQuestionIndex];

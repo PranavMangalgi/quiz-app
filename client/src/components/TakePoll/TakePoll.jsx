@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./takepoll.module.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -7,6 +7,7 @@ function TakeQuiz() {
   const { id } = useParams();
   const [result, setResult] = useState(null);
   const [optionType, setOptionType] = useState("");
+  const initialRender = useRef(true);
 
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -35,19 +36,22 @@ function TakeQuiz() {
   
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_BACKEND_URL}/getpolldata/${id}`
-        );
-        const { optionType, questions} = response.data.data;
-        setOptionType(optionType);
-        setQuestions(questions);
-  
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    if(initialRender.current){
+      (async () => {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_APP_BACKEND_URL}/getpolldata/${id}?taking=true`
+          );
+          const { optionType, questions} = response.data.data;
+          setOptionType(optionType);
+          setQuestions(questions);
+    
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+      initialRender.current = false;
+    }
   }, [id]);
 
   const currentQuestion = questions[currentQuestionIndex];

@@ -23,6 +23,10 @@ const pollSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    visitiedHistory:{
+      type:Array,
+      default:[]
+    }
   },
   { timestamps: true }
 );

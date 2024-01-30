@@ -46,6 +46,9 @@ router.get("/getpolldata/:id", async (req, res) => {
       res.status(400).json({ error: "no id present" });
     }
     console.log(id);
+    if(req.query.taking){
+      await Poll.findByIdAndUpdate(id, {$push:{visitiedHistory:Date.now()}},{new:true});
+    }
     const poll = await Poll.findOne({ _id: id });
     return res.status(200).json({ data: poll });
   } catch (e) {
@@ -132,5 +135,7 @@ router.post("/pollresult/:id", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+
 
 module.exports = router;
