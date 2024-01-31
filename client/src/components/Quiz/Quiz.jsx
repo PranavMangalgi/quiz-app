@@ -409,7 +409,7 @@ function Quiz() {
                                 e.target.value;
                               setQuestions(updatedQuestions);
                             }}
-                            value={option?.image}
+                            value={option.image?option.image:""}
                           />
                         )}
 
