@@ -72,6 +72,17 @@ function Login() {
           }, 1500);
         }
       } catch (e) {
+        toast.error("Incorrect credentials", {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
         console.error(e);
       }
     }
