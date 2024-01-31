@@ -7,6 +7,7 @@ const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const quizRoutes = require("./routes/quizRoutes");
 const pollRoutes = require("./routes/pollRoutes");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use("/", pollRoutes);
 app.use((req, res) => {
   res.send("404, route not found");
 });
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   connectDB(process.env.DB_URL)
