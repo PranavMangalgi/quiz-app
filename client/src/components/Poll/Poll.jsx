@@ -122,15 +122,17 @@ function Poll() {
   }, [cross]);
 
   useEffect(() => {
-    setQuestions((prevQuestions) => {
-      return prevQuestions.map((question) => {
-        const newOptions = getInitialOptionState();
-        return {
-          ...question,
-          options: newOptions,
-        };
-      });
-    });
+      if(!initialRender){
+        setQuestions((prevQuestions) => {
+          return prevQuestions.map((question) => {
+            const newOptions = getInitialOptionState();
+            return {
+              ...question,
+              options: newOptions,
+            };
+          });
+        });
+      }
   }, [optionType, getInitialOptionState]);
 
   const handleSubmit = async (e) => {
