@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setQuizModal,
   setQuizUpdateId,
-  setQuizUpdating,
+  setQuizUpdating, setCopyModal, setCopyLink
 } from "../../features/modalSlice";
 
 function Quiz() {
@@ -197,7 +197,7 @@ function Quiz() {
               },
             }
           );
-
+            console.log(response.data.url);
           if (response.status === 201) {
             toast.success("quiz created!", {
               position: "top-right",
@@ -214,6 +214,8 @@ function Quiz() {
 
             setTimeout(() => {
               dispatch(setQuizModal());
+              dispatch(setCopyModal());
+              dispatch(setCopyLink({qType:'Quiz',url:response.data.url}))
             }, 1300);
           }
         } else {
@@ -247,6 +249,8 @@ function Quiz() {
             setTimeout(() => {
               dispatch(setQuizUpdateId(null));
               dispatch(setQuizUpdating());
+              dispatch(setCopyModal());
+              dispatch(setCopyLink({qType:'Quiz',url:response.data.url}))
             }, 1300);
           }
         }

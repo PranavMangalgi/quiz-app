@@ -30,7 +30,8 @@ router.post("/createquiz", cookieAuth, async (req, res) => {
         { $push: { quizes: newQuizId } },
         { new: true }
       );
-      return res.status(201).json({ success });
+      const url = `${process.env.FRONTEND_URL}/takequiz/${newQuizId}`;
+      return res.status(201).json({ url });
     }
     return res.status(500).json({ error: e.message });
   } catch (e) {
@@ -84,10 +85,10 @@ router.post("/postupdatedquizdata/:id", cookieAuth, async (req, res) => {
     if (!updatedQuiz) {
       return res.status(404).json({ error: "Quiz not found" });
     }
-
+    const url = `${process.env.FRONTEND_URL}/takequiz/${id}`;
     return res
       .status(200)
-      .json({ success: "Updated successfully!", quiz: updatedQuiz });
+      .json({ success: "Updated successfully!", url });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

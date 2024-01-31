@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setPollModal,
   setPollUpdateId,
-  setPollUpdating,
+  setPollUpdating, setCopyModal, setCopyLink
 } from "../../features/modalSlice";
 function Poll() {
   const initialRender = useRef(true);
@@ -207,6 +207,8 @@ function Poll() {
 
             setTimeout(() => {
               dispatch(setPollModal());
+              dispatch(setCopyModal());
+              dispatch(setCopyLink({qType:'Quiz',url:response.data.url}))
             }, 1300);
           }
         } else {
@@ -240,6 +242,8 @@ function Poll() {
             setTimeout(() => {
               dispatch(setPollUpdateId(null));
               dispatch(setPollUpdating());
+              dispatch(setCopyModal());
+              dispatch(setCopyLink({qType:'Quiz',url:response.data.url}))
             }, 1300);
           }
         }

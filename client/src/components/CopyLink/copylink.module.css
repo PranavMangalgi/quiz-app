@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.heading {
+  font-weight: 700;
+  font-size: 1.75rem;
+  text-align: center;
+}
+
+.copyPart {
+  background-color: #ededed;
+  align-self: flex-start;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.btn {
+  border-radius: 5px;
+}

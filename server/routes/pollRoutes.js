@@ -30,13 +30,14 @@ router.post("/createpoll", cookieAuth, async (req, res) => {
         { $push: { polls: newPollId } },
         { new: true }
       );
-      return res.status(201).json({ success });
+      const url = `${process.env.FRONTEND_URL}/takepoll/${newPollId}`;
+      return res.status(201).json({ url });
     }
     return res.status(500).json({ error: e.message });
   } catch (e) {
     res.json({ error: e.message });
   }
-});
+}); 
 
 //get a particular poll data
 router.get("/getpolldata/:id", async (req, res) => {
@@ -82,10 +83,10 @@ router.post("/postupdatedpolldata/:id", cookieAuth, async (req, res) => {
     if (!updatedPoll) {
       return res.status(404).json({ error: "Poll not found" });
     }
-
+    const url = `${process.env.FRONTEND_URL}/takepoll/${id}`;
     return res
       .status(200)
-      .json({ success: "Updated successfully!", poll: updatedPoll });
+      .json({ success: "Updated successfully!", url });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

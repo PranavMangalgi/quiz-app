@@ -11,6 +11,7 @@ import {
   setQuizModal,
   setQuizTypeModal,
   setPollModal,
+  setCopyModal
 } from "../../features/modalSlice";
 Modal.setAppElement("#root");
 
@@ -31,12 +32,20 @@ const quizModalStyle = {
     overflow: "hidden",
   },
 };
+const copyModalStyle = {
+  content: {
+    width: "450px",
+    height: "fit-content",
+    margin: "auto",
+    overflow: "hidden",
+  },
+};
 
 function HomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { quizTypeModal, quizModal, pollModal } = useSelector(
+  const { quizTypeModal, quizModal, pollModal,copyModal } = useSelector(
     (state) => state.modal
   );
 
@@ -95,13 +104,13 @@ function HomePage() {
       </Modal>
 
       {/* copy link modal */}
-      {/* <Modal
-        isOpen={pollModal}
-        onRequestClose={() => dispatch(setPollModal())}
-        style={quizModalStyle}
+      <Modal
+        isOpen={copyModal}
+        onRequestClose={() => dispatch(setCopyModal())}
+        style={copyModalStyle}
       >
         <CopyLink />
-      </Modal> */}
+      </Modal>
     </div>
   );
 }
