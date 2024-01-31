@@ -130,16 +130,18 @@ function Quiz() {
 
   useEffect(() => {
     //when options type changes its set to default and even correctOption is undefined
-    setQuestions((prevQuestions) => {
-      return prevQuestions.map((question) => {
-        const newOptions = getInitialOptionState();
-        return {
-          ...question,
-          options: newOptions,
-          correctOption: undefined,
-        };
+    if(!initialRender){
+      setQuestions((prevQuestions) => {
+        return prevQuestions.map((question) => {
+          const newOptions = getInitialOptionState();
+          return {
+            ...question,
+            options: newOptions,
+            correctOption: undefined,
+          };
+        });
       });
-    });
+    }
   }, [optionType, getInitialOptionState]);
 
   const handleSubmit = async (e) => {
