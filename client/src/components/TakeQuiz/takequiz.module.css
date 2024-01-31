@@ -69,7 +69,6 @@
 
 button {
   margin: 0 auto;
-  margin-bottom: 3rem;
   padding: 10px 20px;
   color: #fff;
   background-color: #60b84b;
@@ -129,50 +128,27 @@ button {
     text-align: left;
   }
   .options {
-      
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content:space-between;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 200px;
+    justify-items: center;
   }
   .option {
-    width: 200px;
-    width: fit-content;
-    
-  }
-  .onlyImg img {
-    width: 150px;
-  }
-  .result {
-    padding: 2rem 1rem;
-    background-color: #fff;
-    min-height: 500px;
-    width: 700px;
-    border-radius: 10px;
-    margin: 10% 0;
+    width: 100%;
   }
 }
-
-@media (min-width: 900px) {
-  button {
-    margin-top: 0.5rem;
-    margin-bottom: 0rem;
-  }
-  .option {
-    width: 300px;
-  }
-  .options {
-    gap: 1rem 300px;
-  }
+.onlyImg img {
+  width: 120px;
+}
+.result {
+  padding: 2rem 1rem;
+  background-color: #fff;
+  min-height: 500px;
+  width: 700px;
+  border-radius: 10px;
+  margin: 10% 0;
 }
 
 .selected {
   border: 1px solid black;
-}
-
-
-@media (min-width: 1300px){
-  .options {
-      gap: 1rem 500px;
-    }
 }
