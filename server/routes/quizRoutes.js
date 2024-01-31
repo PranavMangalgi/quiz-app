@@ -47,8 +47,12 @@ router.get("/getquizdata/:id", async (req, res) => {
       res.status(400).json({ error: "no id present" });
     }
 
-    if(req.query.taking){
-      await Quiz.findByIdAndUpdate(id, {$push:{visitiedHistory:Date.now()}},{new:true});
+    if (req.query.taking) {
+      await Quiz.findByIdAndUpdate(
+        id,
+        { $push: { visitedHistory: Date.now() } },
+        { new: true }
+      );
     }
     const quiz = await Quiz.findOne({ _id: id });
     console.log(quiz);
@@ -86,9 +90,7 @@ router.post("/postupdatedquizdata/:id", cookieAuth, async (req, res) => {
       return res.status(404).json({ error: "Quiz not found" });
     }
     const url = `${process.env.FRONTEND_URL}/takequiz/${id}`;
-    return res
-      .status(200)
-      .json({ success: "Updated successfully!", url });
+    return res.status(200).json({ success: "Updated successfully!", url });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -181,24 +183,12 @@ router.get("/quizanalysis/:id", cookieAuth, async (req, res) => {
 
     console.log("copiedQuiz", copiedQuiz);
 
-    res.status(200).json({ questions: copiedQuiz.questions, title:copiedQuiz.title });
+    res
+      .status(200)
+      .json({ questions: copiedQuiz.questions, title: copiedQuiz.title });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
-
-// router.post('/addquizimpression/:id',async(req,res)=>{
-//   try {
-//     const { id } = req.params;
-//     if (!id) {
-//       res.status(400).json({ error: "no id present" });
-//     }    
-    
-//     await Quiz.findByIdAndUpdate(id, {$push:{visitiedHistory:Date.now()}},{new:true});
-//     res.status(200).json({ count: true });
-//   } catch (e) {
-//     res.status(500).json({ error: e.message });
-//   }
-// })
 
 module.exports = router;

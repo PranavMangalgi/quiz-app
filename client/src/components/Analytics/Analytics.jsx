@@ -54,6 +54,7 @@ function Analytics() {
 
   const deleteRecord = async (qType, id) => {
     const token = Cookies.get("token");
+
     if (qType === "Quiz") {
       const response = await axios.delete(
         `${import.meta.env.VITE_APP_BACKEND_URL}/deletequiz/${id}`,
@@ -105,6 +106,7 @@ function Analytics() {
         console.log(`record deleted!`);
       }
     }
+
     fetchData();
   };
 
@@ -116,6 +118,28 @@ function Analytics() {
       dispatch(setPollUpdating());
       dispatch(setPollUpdateId(id));
     }
+  };
+
+  const handleLinkCopy = (qType, id) => {
+    let text = "";
+    if (qType == "Quiz") {
+      text = `${import.meta.env.VITE_APP_FRONTEND_URL}/takequiz/${id}`;
+    } else {
+      text = `${import.meta.env.VITE_APP_FRONTEND_URL}/takepoll/${id}`;
+    }
+    navigator.clipboard.writeText(text);
+    toast.success("Link Copied!", {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      closeButton: false,
+      transition: Bounce,
+    });
   };
 
   return (
@@ -149,7 +173,7 @@ function Analytics() {
                       2023
                     </td>
                     <td
-                      className={styles.icon}
+                      className={`${styles.icon} ${styles.edit}`}
                       onClick={() =>
                         editSelected(record.questionType, record._id)
                       }
@@ -157,14 +181,19 @@ function Analytics() {
                       <TbEdit size="1.2rem" />
                     </td>
                     <td
-                      className={styles.icon}
+                      className={`${styles.icon} ${styles.delete}`}
                       onClick={() =>
                         deleteRecord(record.questionType, record._id)
                       }
                     >
                       <MdDelete size="1.2rem" />
                     </td>
-                    <td className={styles.icon}>
+                    <td
+                      className={`${styles.icon} ${styles.share}`}
+                      onClick={() =>
+                        handleLinkCopy(record.questionType, record._id)
+                      }
+                    >
                       <IoMdShare size="1.2rem" />
                     </td>
                     <td className={styles.questionWise}>

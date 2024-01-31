@@ -37,7 +37,7 @@ router.post("/createpoll", cookieAuth, async (req, res) => {
   } catch (e) {
     res.json({ error: e.message });
   }
-}); 
+});
 
 //get a particular poll data
 router.get("/getpolldata/:id", async (req, res) => {
@@ -47,8 +47,12 @@ router.get("/getpolldata/:id", async (req, res) => {
       res.status(400).json({ error: "no id present" });
     }
     console.log(id);
-    if(req.query.taking){
-      await Poll.findByIdAndUpdate(id, {$push:{visitiedHistory:Date.now()}},{new:true});
+    if (req.query.taking) {
+      await Poll.findByIdAndUpdate(
+        id,
+        { $push: { visitedHistory: Date.now() } },
+        { new: true }
+      );
     }
     const poll = await Poll.findOne({ _id: id });
     return res.status(200).json({ data: poll });
@@ -84,9 +88,7 @@ router.post("/postupdatedpolldata/:id", cookieAuth, async (req, res) => {
       return res.status(404).json({ error: "Poll not found" });
     }
     const url = `${process.env.FRONTEND_URL}/takepoll/${id}`;
-    return res
-      .status(200)
-      .json({ success: "Updated successfully!", url });
+    return res.status(200).json({ success: "Updated successfully!", url });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -136,7 +138,5 @@ router.post("/pollresult/:id", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-
-
 
 module.exports = router;

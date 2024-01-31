@@ -98,6 +98,7 @@ function Quiz() {
   };
 
   useEffect(() => {
+    //  below api is called for updating and only once
     if (initialRender && quizUpdating && quizUpdateId) {
       console.log(quizUpdateId);
       (async () => {
@@ -128,6 +129,7 @@ function Quiz() {
   }, [cross]);
 
   useEffect(() => {
+    //when options type changes its set to default and even correctOption is undefined
     setQuestions((prevQuestions) => {
       return prevQuestions.map((question) => {
         const newOptions = getInitialOptionState();
@@ -183,6 +185,7 @@ function Quiz() {
       const token = Cookies.get("token");
       try {
         if (!quizUpdateId && !quizUpdating) {
+
           const response = await axios.post(
             `${import.meta.env.VITE_APP_BACKEND_URL}/createquiz`,
             {

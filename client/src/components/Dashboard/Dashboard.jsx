@@ -5,8 +5,10 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import Cookies from "js-cookie";
 import axios from "axios";
 function Dashboard() {
-  
+  const [impressions, setImpressions] = useState(0);
   const [trendingQuizes, setTrendingQuizes] = useState([]);
+  const [quizNumber, setQuizNumber] = useState(0);
+  const [questionCount, setQuestionCount] =useState(0);
 
   const getCreatedDate = (date) => {
     let timestamp = new Date(date);
@@ -32,7 +34,10 @@ function Dashboard() {
           }
         );
         console.log(response.data);
-        setTrendingQuizes(response.data.data.quizes);
+        setTrendingQuizes(response.data.quizes);
+        setImpressions(response.data.impressions);
+        setQuizNumber(response.data.quizesNumber);
+        setQuestionCount(response.data.questionCount);
       } catch (e) {
         console.error(e);
       }
@@ -44,15 +49,15 @@ function Dashboard() {
       <div className={styles.dashboard}>
         <div className={styles.metricDetails}>
           <div className={`${styles.metric} ${styles.orangeCol}`}>
-            <div className={styles.metricReading}>12</div>
+            <div className={styles.metricReading}>{quizNumber}</div>
             <div>Quiz Created</div>
           </div>
           <div className={`${styles.metric} ${styles.greenCol}`}>
-            <div className={styles.metricReading}>12</div>
+            <div className={styles.metricReading}>{questionCount}</div>
             <div>Questions Created</div>
           </div>
           <div className={`${styles.metric} ${styles.blueCol}`}>
-            <div className={styles.metricReading}>12</div>
+            <div className={styles.metricReading}>{impressions}</div>
             <div>Impressions Created</div>
           </div>
         </div>
@@ -66,7 +71,7 @@ function Dashboard() {
                     <div className={styles.quizCardContent}>
                       <div>{quiz.title}</div>
                       <div className={styles.orangeCol}>
-                        667{" "}
+                        {quiz.visitedHistory.length}{" "}
                         <MdOutlineRemoveRedEye
                           style={{ alignSelf: "center" }}
                         />

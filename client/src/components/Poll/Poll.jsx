@@ -208,7 +208,7 @@ function Poll() {
             setTimeout(() => {
               dispatch(setPollModal());
               dispatch(setCopyModal());
-              dispatch(setCopyLink({qType:'Quiz',url:response.data.url}))
+              dispatch(setCopyLink({qType:'Poll',url:response.data.url}))
             }, 1300);
           }
         } else {
@@ -243,7 +243,7 @@ function Poll() {
               dispatch(setPollUpdateId(null));
               dispatch(setPollUpdating());
               dispatch(setCopyModal());
-              dispatch(setCopyLink({qType:'Quiz',url:response.data.url}))
+              dispatch(setCopyLink({qType:'Poll',url:response.data.url}))
             }, 1300);
           }
         }

@@ -55,3 +55,33 @@ thead {
 .questionWise{
   text-decoration: underline;
 }
+
+.edit{
+  color: #854CFF;
+}
+
+.delete{
+  color: rgb(240, 63, 63);
+}
+
+.share{
+  color: #60B84B;
+}
+
+.modal{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.modalBtns{
+  display: flex;
+  gap: 1rem;
+}
+
+.modalBtns :first-child{
+  background-color: rgb(240, 63, 63);
+  color: #fff;
+}
