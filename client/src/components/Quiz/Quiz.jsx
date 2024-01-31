@@ -227,7 +227,7 @@ function Quiz() {
           const response = await axios.post(
             `${
               import.meta.env.VITE_APP_BACKEND_URL
-            }/postupdatedquizdata/${quizUpdateId}`,
+            }/postupdatedquizdata/${quizUpdateId}?taking=false`,
             { timer, optionType, questions },
             {
               headers: {
